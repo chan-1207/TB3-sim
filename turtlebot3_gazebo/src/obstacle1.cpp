@@ -14,7 +14,7 @@
 //
 // Author: Ryan Shim, ChanHyeong Lee
 
-#include "obstacle1.hpp"
+#include "turtlebot3_gazebo/obstacle1.hpp"
 
 #include <chrono>
 #include <cmath>
