@@ -23,7 +23,7 @@
 
 #include <gz/plugin/Register.hh>
 #include <gz/sim/EventManager.hh>
-#include <gz/sim/UpdateInfo.hh>
+#include <gz/sim/Types.hh>
 
 using gz::math::Pose3d;
 using gz::math::Quaterniond;
@@ -40,46 +40,35 @@ using gz::sim::UpdateInfo;
 namespace turtlebot3_gazebo
 {
 
-class ObstaclesPlugin
-  : public System,
-  public ISystemConfigure,
-  public ISystemPreUpdate
+void ObstaclesPlugin::Configure(
+  const gz::sim::Entity & entity,
+  const std::shared_ptr<const sdf::Element> &,
+  gz::sim::EntityComponentManager &,
+  gz::sim::EventManager &)
 {
-public:
-  void Configure(
-    const Entity & entity,
-    const std::shared_ptr<const sdf::Element> &,
-    EntityComponentManager &,
-    EventManager &) override
-  {
-    this->model = Model(entity);
-    this->startTime = std::chrono::steady_clock::now();
+  this->model = gz::sim::Model(entity);
+  this->startTime = std::chrono::steady_clock::now();
+}
+
+void ObstaclesPlugin::PreUpdate(
+  const gz::sim::UpdateInfo &,
+  gz::sim::EntityComponentManager & ecm)
+{
+  if (!this->model.Valid(ecm)) {
+    return;
   }
 
-  void PreUpdate(
-    const UpdateInfo & info,
-    EntityComponentManager & ecm) override
-  {
-    if (!this->model.Valid(ecm)) {
-      return;
-    }
+  auto now = std::chrono::steady_clock::now();
+  std::chrono::duration<double> elapsed = now - this->startTime;
+  double t = fmod(elapsed.count(), 40.0);
+  double angle = 2 * M_PI * t / 40.0;
 
-    auto now = std::chrono::steady_clock::now();
-    std::chrono::duration<double> elapsed = now - this->startTime;
-    double t = fmod(elapsed.count(), 40.0);
-    double angle = 2 * M_PI * t / 40.0;
+  gz::math::Pose3d pose(
+    gz::math::Vector3d(0, 0, 0),
+    gz::math::Quaterniond(0, 0, angle));
 
-    gz::math::Pose3d pose(
-      gz::math::Vector3d(0, 0, 0),
-      gz::math::Quaterniond(0, 0, angle));
-
-    this->model.SetWorldPoseCmd(ecm, pose);
-  }
-
-private:
-  Model model{kNullEntity};
-  std::chrono::steady_clock::time_point startTime;
-};
+  this->model.SetWorldPoseCmd(ecm, pose);
+}
 
 }  // namespace turtlebot3_gazebo
 

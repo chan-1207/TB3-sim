@@ -37,8 +37,8 @@ class Obstacle2Plugin
   public gz::sim::ISystemPreUpdate
 {
 public:
-  Obstacle1Plugin() = default;
-  ~Obstacle1Plugin() override = default;
+  Obstacle2Plugin() = default;
+  ~Obstacle2Plugin() override = default;
 
   void Configure(
     const gz::sim::Entity & entity,

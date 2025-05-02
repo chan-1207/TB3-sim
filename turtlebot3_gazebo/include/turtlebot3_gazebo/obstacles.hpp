@@ -18,16 +18,13 @@
 #define TURTLEBOT3_GAZEBO__OBSTACLES_HPP_
 
 #include <chrono>
-#include <memory>
-#include <sdf/Element.hh>
 
-#include <gz/math/Pose3.hh>
 #include <gz/math/Quaternion.hh>
 #include <gz/math/Vector3.hh>
-#include <gz/sim/components/WorldPose.hh>
 #include <gz/sim/EntityComponentManager.hh>
 #include <gz/sim/Model.hh>
 #include <gz/sim/System.hh>
+#include <gz/sim/components/Pose.hh>
 
 namespace turtlebot3_gazebo
 {
