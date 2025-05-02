@@ -57,4 +57,4 @@ private:
 
 }  // namespace turtlebot3_gazebo
 
-#endif  // TURTLEBOT3_GAZEBO_OBSTACLE1_PLUGIN_HPP
+#endif  // TURTLEBOT3_GAZEBO__OBSTACLE1_HPP_

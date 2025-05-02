@@ -25,8 +25,17 @@
 #include <gz/sim/EventManager.hh>
 #include <gz/sim/UpdateInfo.hh>
 
-using namespace gz;
-using namespace sim;
+using gz::math::Pose3d;
+using gz::math::Quaterniond;
+using gz::math::Vector3d;
+using gz::sim::Entity;
+using gz::sim::EntityComponentManager;
+using gz::sim::EventManager;
+using gz::sim::ISystemConfigure;
+using gz::sim::ISystemPreUpdate;
+using gz::sim::Model;
+using gz::sim::System;
+using gz::sim::UpdateInfo;
 
 namespace turtlebot3_gazebo
 {
@@ -63,50 +72,37 @@ public:
     double localT = 0.0;
     double duration = 1.0;
 
-    if (t <= 10.0)
-    {
+    if (t <= 10.0) {
       start = gz::math::Vector3d(2.0, 2.0, 0.25);
       end = gz::math::Vector3d(1.5, 1.0, 0.25);
       duration = 10.0;
       localT = t;
-    }
-    else if (t <= 40.0)
-    {
+    } else if (t <= 40.0) {
       start = gz::math::Vector3d(1.5, 1.0, 0.25);
       end = gz::math::Vector3d(-1.5, 1.0, 0.25);
       duration = 30.0;
       localT = t - 10.0;
-    }
-    else if (t <= 60.0)
-    {
+    } else if (t <= 60.0) {
       start = gz::math::Vector3d(-1.5, 1.0, 0.25);
       end = gz::math::Vector3d(-1.7, -1.0, 0.25);
       duration = 20.0;
       localT = t - 40.0;
-    }
-    else if (t <= 80.0)
-    {
+    } else if (t <= 80.0) {
       start = gz::math::Vector3d(-1.7, -1.0, 0.25);
       end = gz::math::Vector3d(-1.5, 1.0, 0.25);
       duration = 20.0;
       localT = t - 60.0;
-    }
-    else if (t <= 120.0)
-    {
+    } else if (t <= 120.0) {
       start = gz::math::Vector3d(-1.5, 1.0, 0.25);
       end = gz::math::Vector3d(1.5, 1.0, 0.25);
       duration = 40.0;
       localT = t - 80.0;
-    }
-    else if (t <= 130.0)
-    {
+    } else if (t <= 130.0) {
       start = gz::math::Vector3d(1.5, 1.0, 0.25);
       end = gz::math::Vector3d(2.0, 2.0, 0.25);
       duration = 10.0;
       localT = t - 120.0;
-    }
-    else
-    {
+    } else {
       start = gz::math::Vector3d(2.0, 2.0, 0.25);
       end = start;
       localT = 0.0;

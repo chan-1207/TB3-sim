@@ -25,8 +25,17 @@
 #include <gz/sim/EventManager.hh>
 #include <gz/sim/UpdateInfo.hh>
 
-using namespace gz;
-using namespace sim;
+using gz::math::Pose3d;
+using gz::math::Quaterniond;
+using gz::math::Vector3d;
+using gz::sim::Entity;
+using gz::sim::EntityComponentManager;
+using gz::sim::EventManager;
+using gz::sim::ISystemConfigure;
+using gz::sim::ISystemPreUpdate;
+using gz::sim::Model;
+using gz::sim::System;
+using gz::sim::UpdateInfo;
 
 namespace turtlebot3_gazebo
 {
