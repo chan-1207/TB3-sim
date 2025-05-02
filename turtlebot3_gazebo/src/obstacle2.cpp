@@ -16,6 +16,10 @@
 
 #include "turtlebot3_gazebo/obstacle2.hpp"
 
+#include <chrono>
+#include <cmath>
+#include <memory>
+
 #include <gz/math/Quaternion.hh>
 #include <gz/math/Vector3.hh>
 #include <gz/plugin/Register.hh>
@@ -25,9 +29,7 @@
 #include <gz/sim/System.hh>
 #include <gz/sim/Types.hh>
 #include <sdf/Element.hh>
-#include <chrono>
-#include <cmath>
-#include <memory>
+
 
 using gz::math::Pose3d;
 using gz::math::Quaterniond;
@@ -72,57 +74,57 @@ void Obstacle2Plugin::PreUpdate(
   double duration = 1.0;
 
   if (t <= 10.0) {
-    start = { -2.0, -2.0, 0.25 };
-    end = { -1.3, -1.8, 0.25 };
+    start = {-2.0, -2.0, 0.25};
+    end = {-1.3, -1.8, 0.25};
     duration = 10.0;
     localT = t;
   } else if (t <= 40.0) {
-    start = { -1.3, -1.8, 0.25 };
-    end = { 0.5, 2.0, 0.25 };
+    start = {-1.3, -1.8, 0.25};
+    end = {0.5, 2.0, 0.25};
     duration = 30.0;
     localT = t - 10.0;
   } else if (t <= 55.0) {
-    start = { 0.5, 2.0, 0.25 };
-    end = { -2.0, 1.5, 0.25 };
+    start = {0.5, 2.0, 0.25};
+    end = {-2.0, 1.5, 0.25};
     duration = 15.0;
     localT = t - 40.0;
   } else if (t <= 85.0) {
-    start = { -2.0, 1.5, 0.25 };
-    end = { 1.5, -0.2, 0.25 };
+    start = {-2.0, 1.5, 0.25};
+    end = {1.5, -0.2, 0.25};
     duration = 30.0;
     localT = t - 55.0;
   } else if (t <= 100.0) {
-    start = { 1.5, -0.2, 0.25 };
-    end = { 1.5, -2.0, 0.25 };
+    start = {1.5, -0.2, 0.25};
+    end = {1.5, -2.0, 0.25};
     duration = 15.0;
     localT = t - 85.0;
   } else if (t <= 110.0) {
-    start = { 1.5, -2.0, 0.25 };
-    end = { 0.0, -1.5, 0.25 };
+    start = {1.5, -2.0, 0.25};
+    end = {0.0, -1.5, 0.25};
     duration = 10.0;
     localT = t - 100.0;
   } else if (t <= 115.0) {
-    start = { 0.0, -1.5, 0.25 };
-    end = { -0.5, -1.0, 0.25 };
+    start = {0.0, -1.5, 0.25};
+    end = {-0.5, -1.0, 0.25};
     duration = 5.0;
     localT = t - 110.0;
   } else if (t <= 120.0) {
-    start = { -0.5, -1.0, 0.25 };
-    end = { -1.0, -1.5, 0.25 };
+    start = {-0.5, -1.0, 0.25};
+    end = {-1.0, -1.5, 0.25};
     duration = 5.0;
     localT = t - 115.0;
   } else if (t <= 125.0) {
-    start = { -1.0, -1.5, 0.25 };
-    end = { -1.5, -1.9, 0.25 };
+    start = {-1.0, -1.5, 0.25};
+    end = {-1.5, -1.9, 0.25};
     duration = 5.0;
     localT = t - 120.0;
   } else if (t <= 130.0) {
-    start = { -1.5, -1.9, 0.25 };
-    end = { -2.0, -2.0, 0.25 };
+    start = {-1.5, -1.9, 0.25};
+    end = {-2.0, -2.0, 0.25};
     duration = 5.0;
     localT = t - 125.0;
   } else {
-    start = { -2.0, -2.0, 0.25 };
+    start = {-2.0, -2.0, 0.25};
     end = start;
     localT = 0.0;
   }
