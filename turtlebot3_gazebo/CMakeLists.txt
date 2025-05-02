@@ -52,13 +52,13 @@ add_executable(turtlebot3_drive src/turtlebot3_drive.cpp)
 ament_target_dependencies(turtlebot3_drive ${dependencies})
 
 add_library(obstacles SHARED src/obstacles.cpp)
-ament_target_dependencies(obstacles gz-sim8 z-plugin2)
+ament_target_dependencies(obstacles gz-sim8 gz-plugin2)
 
 add_library(obstacle1 SHARED src/obstacle1.cpp)
-ament_target_dependencies(obstacle1 gz-sim8 z-plugin2)
+ament_target_dependencies(obstacle1 gz-sim8 gz-plugin2)
 
 add_library(obstacle2 SHARED src/obstacle2.cpp)
-ament_target_dependencies(obstacle2 gz-sim8 z-plugin2)
+ament_target_dependencies(obstacle2 gz-sim8 gz-plugin2)
 
 ################################################################################
 # Install
