@@ -42,12 +42,12 @@ namespace turtlebot3_gazebo
 
 class Obstacle1Plugin
   : public System,
-    public ISystemConfigure,
-    public ISystemPreUpdate
+  public ISystemConfigure,
+  public ISystemPreUpdate
 {
 public:
   void Configure(
-    const Entity &entity,
+    const Entity & entity,
     const std::shared_ptr<const sdf::Element> &,
     EntityComponentManager &,
     EventManager &) override
@@ -57,11 +57,12 @@ public:
   }
 
   void PreUpdate(
-    const UpdateInfo &info,
-    EntityComponentManager &ecm) override
+    const UpdateInfo & info,
+    EntityComponentManager & ecm) override
   {
-    if (!this->model.Valid(ecm))
+    if (!this->model.Valid(ecm)) {
       return;
+    }
 
     auto now = std::chrono::steady_clock::now();
     std::chrono::duration<double> elapsed = now - this->startTime;

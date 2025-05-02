@@ -34,19 +34,19 @@ namespace turtlebot3_gazebo
 
 class ObstaclesPlugin
   : public gz::sim::System,
-    public gz::sim::ISystemConfigure,
-    public gz::sim::ISystemPreUpdate
+  public gz::sim::ISystemConfigure,
+  public gz::sim::ISystemPreUpdate
 {
 public:
   void Configure(
-    const gz::sim::Entity &entity,
-    const std::shared_ptr<const sdf::Element> &sdf,
-    gz::sim::EntityComponentManager &ecm,
-    gz::sim::EventManager &eventMgr) override;
+    const gz::sim::Entity & entity,
+    const std::shared_ptr<const sdf::Element> & sdf,
+    gz::sim::EntityComponentManager & ecm,
+    gz::sim::EventManager & eventMgr) override;
 
   void PreUpdate(
-    const gz::sim::UpdateInfo &info,
-    gz::sim::EntityComponentManager &ecm) override;
+    const gz::sim::UpdateInfo & info,
+    gz::sim::EntityComponentManager & ecm) override;
 
 private:
   gz::sim::Model model{gz::sim::kNullEntity};
