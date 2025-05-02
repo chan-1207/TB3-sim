@@ -12,33 +12,73 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
-// Author: Ryan Shim
+// Author: Ryan Shim, ChanHyeong Lee
 
-#include "turtlebot3_gazebo/obstacles.hpp"
+#include "obstacles.hpp"
 
-namespace gazebo
+#include <chrono>
+#include <cmath>
+#include <memory>
+#include <sdf/Element.hh>
+
+#include <gz/plugin/Register.hh>
+#include <gz/sim/EventManager.hh>
+#include <gz/sim/UpdateInfo.hh>
+
+using namespace gz;
+using namespace sim;
+
+namespace turtlebot3_gazebo
 {
-void Obstacles::Load(physics::ModelPtr _parent, sdf::ElementPtr /*_sdf*/)
+
+class ObstaclesPlugin
+  : public System,
+    public ISystemConfigure,
+    public ISystemPreUpdate
 {
-  this->model = _parent;
+public:
+  void Configure(
+    const Entity &entity,
+    const std::shared_ptr<const sdf::Element> &,
+    EntityComponentManager &,
+    EventManager &) override
+  {
+    this->model = Model(entity);
+    this->startTime = std::chrono::steady_clock::now();
+  }
 
-  gazebo::common::PoseAnimationPtr anim(
-    new gazebo::common::PoseAnimation("move", 40.0, true));
+  void PreUpdate(
+    const UpdateInfo &info,
+    EntityComponentManager &ecm) override
+  {
+    if (!this->model.Valid(ecm))
+      return;
 
-  gazebo::common::PoseKeyFrame * key;
+    auto now = std::chrono::steady_clock::now();
+    std::chrono::duration<double> elapsed = now - this->startTime;
+    double t = fmod(elapsed.count(), 40.0);
+    double angle = 2 * M_PI * t / 40.0;
 
-  key = anim->CreateKeyFrame(0);
-  key->Translation(ignition::math::Vector3d(0.0, 0.0, 0.0));
-  key->Rotation(ignition::math::Quaterniond(0, 0, 0));
+    gz::math::Pose3d pose(
+      gz::math::Vector3d(0, 0, 0),
+      gz::math::Quaterniond(0, 0, angle));
 
-  key = anim->CreateKeyFrame(20);
-  key->Translation(ignition::math::Vector3d(0.0, 0.0, 0.0));
-  key->Rotation(ignition::math::Quaterniond(0, 0, PI));
+    this->model.SetWorldPoseCmd(ecm, pose);
+  }
 
-  key = anim->CreateKeyFrame(40);
-  key->Translation(ignition::math::Vector3d(0.0, 0.0, 0.0));
-  key->Rotation(ignition::math::Quaterniond(0, 0, 2 * PI));
+private:
+  Model model{kNullEntity};
+  std::chrono::steady_clock::time_point startTime;
+};
 
-  _parent->SetAnimation(anim);
-}
-}  // namespace gazebo
+}  // namespace turtlebot3_gazebo
+
+GZ_ADD_PLUGIN(
+  turtlebot3_gazebo::ObstaclesPlugin,
+  gz::sim::System,
+  gz::sim::ISystemConfigure,
+  gz::sim::ISystemPreUpdate)
+
+GZ_ADD_PLUGIN_ALIAS(
+  turtlebot3_gazebo::ObstaclesPlugin,
+  "turtlebot3_gazebo::ObstaclesPlugin")

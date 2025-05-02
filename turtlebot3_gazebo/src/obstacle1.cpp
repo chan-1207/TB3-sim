@@ -12,53 +12,126 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
-// Author: Ryan Shim
+// Author: Ryan Shim, ChanHyeong Lee
 
-#include "turtlebot3_gazebo/obstacle1.hpp"
+#include "obstacle1.hpp"
 
-namespace gazebo
+#include <chrono>
+#include <cmath>
+#include <memory>
+#include <sdf/Element.hh>
+
+#include <gz/plugin/Register.hh>
+#include <gz/sim/EventManager.hh>
+#include <gz/sim/UpdateInfo.hh>
+
+using namespace gz;
+using namespace sim;
+
+namespace turtlebot3_gazebo
 {
-void Obstacle1::Load(physics::ModelPtr _parent, sdf::ElementPtr /*_sdf*/)
+
+class Obstacle1Plugin
+  : public System,
+    public ISystemConfigure,
+    public ISystemPreUpdate
 {
-  this->model = _parent;
+public:
+  void Configure(
+    const Entity &entity,
+    const std::shared_ptr<const sdf::Element> &,
+    EntityComponentManager &,
+    EventManager &) override
+  {
+    this->model = Model(entity);
+    this->startTime = std::chrono::steady_clock::now();
+  }
 
-  gazebo::common::PoseAnimationPtr anim(
-    new gazebo::common::PoseAnimation("move1", 160.0, true));
+  void PreUpdate(
+    const UpdateInfo &info,
+    EntityComponentManager &ecm) override
+  {
+    if (!this->model.Valid(ecm))
+      return;
 
-  gazebo::common::PoseKeyFrame * key;
+    auto now = std::chrono::steady_clock::now();
+    std::chrono::duration<double> elapsed = now - this->startTime;
+    double cycle = 150.0;
+    double t = std::fmod(elapsed.count(), cycle);
 
-  key = anim->CreateKeyFrame(0);
-  key->Translation(ignition::math::Vector3d(0.0, 0.0, 0.0));
-  key->Rotation(ignition::math::Quaterniond(0, 0, 0));
+    gz::math::Vector3d start, end;
+    double localT = 0.0;
+    double duration = 1.0;
 
-  key = anim->CreateKeyFrame(10);
-  key->Translation(ignition::math::Vector3d(-0.5, -1.0, 0.0));
-  key->Rotation(ignition::math::Quaterniond(0, 0, 0));
+    if (t <= 10.0)
+    {
+      start = gz::math::Vector3d(2.0, 2.0, 0.25);
+      end = gz::math::Vector3d(1.5, 1.0, 0.25);
+      duration = 10.0;
+      localT = t;
+    }
+    else if (t <= 40.0)
+    {
+      start = gz::math::Vector3d(1.5, 1.0, 0.25);
+      end = gz::math::Vector3d(-1.5, 1.0, 0.25);
+      duration = 30.0;
+      localT = t - 10.0;
+    }
+    else if (t <= 60.0)
+    {
+      start = gz::math::Vector3d(-1.5, 1.0, 0.25);
+      end = gz::math::Vector3d(-1.7, -1.0, 0.25);
+      duration = 20.0;
+      localT = t - 40.0;
+    }
+    else if (t <= 80.0)
+    {
+      start = gz::math::Vector3d(-1.7, -1.0, 0.25);
+      end = gz::math::Vector3d(-1.5, 1.0, 0.25);
+      duration = 20.0;
+      localT = t - 60.0;
+    }
+    else if (t <= 120.0)
+    {
+      start = gz::math::Vector3d(-1.5, 1.0, 0.25);
+      end = gz::math::Vector3d(1.5, 1.0, 0.25);
+      duration = 40.0;
+      localT = t - 80.0;
+    }
+    else if (t <= 130.0)
+    {
+      start = gz::math::Vector3d(1.5, 1.0, 0.25);
+      end = gz::math::Vector3d(2.0, 2.0, 0.25);
+      duration = 10.0;
+      localT = t - 120.0;
+    }
+    else
+    {
+      start = gz::math::Vector3d(2.0, 2.0, 0.25);
+      end = start;
+      localT = 0.0;
+    }
 
-  key = anim->CreateKeyFrame(50);
-  key->Translation(ignition::math::Vector3d(-3.5, -1.0, 0.0));
-  key->Rotation(ignition::math::Quaterniond(0, 0, 0));
+    double alpha = std::min(localT / duration, 1.0);
+    gz::math::Vector3d currentPos = start + (end - start) * alpha;
+    gz::math::Pose3d pose(currentPos, gz::math::Quaterniond::Identity);
 
-  key = anim->CreateKeyFrame(70);
-  key->Translation(ignition::math::Vector3d(-3.7, -3.0, 0.0));
-  key->Rotation(ignition::math::Quaterniond(0, 0, 0));
+    this->model.SetWorldPoseCmd(ecm, pose);
+  }
 
-  key = anim->CreateKeyFrame(90);
-  key->Translation(ignition::math::Vector3d(-3.5, -1.0, 0.0));
-  key->Rotation(ignition::math::Quaterniond(0, 0, 0));
+private:
+  Model model{kNullEntity};
+  std::chrono::steady_clock::time_point startTime;
+};
 
-  key = anim->CreateKeyFrame(130);
-  key->Translation(ignition::math::Vector3d(-0.5, -1.0, 0.0));
-  key->Rotation(ignition::math::Quaterniond(0, 0, 0));
+}  // namespace turtlebot3_gazebo
 
-  key = anim->CreateKeyFrame(140);
-  key->Translation(ignition::math::Vector3d(0.0, 0.0, 0.0));
-  key->Rotation(ignition::math::Quaterniond(0, 0, 0));
+GZ_ADD_PLUGIN(
+  turtlebot3_gazebo::Obstacle1Plugin,
+  gz::sim::System,
+  gz::sim::ISystemConfigure,
+  gz::sim::ISystemPreUpdate)
 
-  key = anim->CreateKeyFrame(160);
-  key->Translation(ignition::math::Vector3d(0.0, 0.0, 0.0));
-  key->Rotation(ignition::math::Quaterniond(0, 0, 0));
-
-  _parent->SetAnimation(anim);
-}
-}  // namespace gazebo
+GZ_ADD_PLUGIN_ALIAS(
+  turtlebot3_gazebo::Obstacle1Plugin,
+  "turtlebot3_gazebo::Obstacle1Plugin")
