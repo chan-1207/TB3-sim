@@ -25,16 +25,7 @@ find_package(nav_msgs REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(tf2 REQUIRED)
-if($ENV{ROS_DISTRO} STREQUAL "jazzy")
-  find_package(gz-sim8 REQUIRED)
-  set(GZ_SIM_PKG gz-sim8)
-elseif($ENV{ROS_DISTRO} STREQUAL "rolling")
-  find_package(gz-sim7 REQUIRED)
-  set(GZ_SIM_PKG gz-sim7)
-elseif($ENV{ROS_DISTRO} STREQUAL "humble")
-  find_package(gz-sim6 REQUIRED)
-  set(GZ_SIM_PKG gz-sim6)
-endif()
+find_package(gz-sim8 REQUIRED)
 
 ################################################################################
 # Build
@@ -59,14 +50,16 @@ set(dependencies
 add_executable(turtlebot3_drive src/turtlebot3_drive.cpp)
 ament_target_dependencies(turtlebot3_drive ${dependencies})
 
-add_library(obstacles SHARED src/obstacles.cpp)
-ament_target_dependencies(obstacles ${GZ_SIM_PKG})
+set(OBSTACLE_LIBS
+  obstacles
+  obstacle1
+  obstacle2
+)
 
-add_library(obstacle1 SHARED src/obstacle1.cpp)
-ament_target_dependencies(obstacle1 ${GZ_SIM_PKG})
-
-add_library(obstacle2 SHARED src/obstacle2.cpp)
-ament_target_dependencies(obstacle2 ${GZ_SIM_PKG})
+foreach(lib ${OBSTACLE_LIBS})
+  add_library(${lib} SHARED src/${lib}.cpp)
+  ament_target_dependencies(${lib} gz-sim8)
+endforeach()
 
 ################################################################################
 # Install
