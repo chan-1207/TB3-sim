@@ -25,8 +25,19 @@ find_package(nav_msgs REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(tf2 REQUIRED)
-find_package(gz-sim8 REQUIRED)
-
+if(DEFINED ENV{ROS_DISTRO})
+  message(STATUS "ROS_DISTRO: $ENV{ROS_DISTRO}")
+  if($ENV{ROS_DISTRO} STREQUAL "jazzy")
+    find_package(gz-sim8 REQUIRED)
+    set(GZ_SIM gz-sim8)
+  elseif($ENV{ROS_DISTRO} STREQUAL "rolling")
+    find_package(gz-sim7 REQUIRED)
+    set(GZ_SIM gz-sim7)
+  elseif($ENV{ROS_DISTRO} STREQUAL "humble")
+    find_package(gz-sim7 REQUIRED)
+    set(GZ_SIM gz-sim7)
+  endif()
+endif()
 ################################################################################
 # Build
 ################################################################################
@@ -58,7 +69,7 @@ set(OBSTACLE_LIBS
 
 foreach(lib ${OBSTACLE_LIBS})
   add_library(${lib} SHARED src/${lib}.cpp)
-  ament_target_dependencies(${lib} gz-sim8)
+  ament_target_dependencies(${lib} GZ_SIM)
 endforeach()
 
 ################################################################################
@@ -84,7 +95,7 @@ install(DIRECTORY include/
 # Macro for ament package
 ################################################################################
 ament_export_include_directories(include)
-ament_export_dependencies(gz-sim8)
+ament_export_dependencies(GZ_SIM)
 ament_export_dependencies(geometry_msgs)
 ament_export_dependencies(nav_msgs)
 ament_export_dependencies(rclcpp)
