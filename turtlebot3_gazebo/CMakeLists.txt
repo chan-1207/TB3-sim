@@ -58,9 +58,15 @@ set(OBSTACLE_LIBS
   obstacle2
 )
 
+
 foreach(lib ${OBSTACLE_LIBS})
   add_library(${lib} SHARED src/${lib}.cpp)
-  ament_target_dependencies(${lib} gz-sim8)
+  target_include_directories(${lib}
+    PUBLIC ${gz-sim8_INCLUDE_DIRS}
+  )
+  target_link_libraries(${lib}
+    ${gz-sim8_LIBRARIES}
+  )
 endforeach()
 
 ################################################################################
