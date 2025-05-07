@@ -29,15 +29,15 @@ if(DEFINED ENV{ROS_DISTRO})
   message(STATUS "ROS_DISTRO: $ENV{ROS_DISTRO}")
   if($ENV{ROS_DISTRO} STREQUAL "jazzy")
     find_package(gz-sim8 REQUIRED)
-    set(GZ_SIM gz-sim8)
-  elseif($ENV{ROS_DISTRO} STREQUAL "rolling")
+    set(GZ_SIM_INCLUDE_DIRS ${gz-sim8_INCLUDE_DIRS})
+    set(GZ_SIM_LIBRARIES ${gz-sim8_LIBRARIES})
+  else()
     find_package(gz-sim7 REQUIRED)
-    set(GZ_SIM gz-sim7)
-  elseif($ENV{ROS_DISTRO} STREQUAL "humble")
-    find_package(gz-sim7 REQUIRED)
-    set(GZ_SIM gz-sim7)
+    set(GZ_SIM_INCLUDE_DIRS ${gz-sim7_INCLUDE_DIRS})
+    set(GZ_SIM_LIBRARIES ${gz-sim7_LIBRARIES})
   endif()
 endif()
+
 ################################################################################
 # Build
 ################################################################################
@@ -69,7 +69,17 @@ set(OBSTACLE_LIBS
 
 foreach(lib ${OBSTACLE_LIBS})
   add_library(${lib} SHARED src/${lib}.cpp)
-  ament_target_dependencies(${lib} GZ_SIM)
+  target_include_directories(${lib}
+    PUBLIC
+      include
+      ${GZ_SIM_INCLUDE_DIRS}
+  )
+  target_link_libraries(${lib}
+    ${GZ_SIM_LIBRARIES}
+  )
+  install(TARGETS ${lib}
+    LIBRARY DESTINATION lib
+  )
 endforeach()
 
 ################################################################################
@@ -95,7 +105,6 @@ install(DIRECTORY include/
 # Macro for ament package
 ################################################################################
 ament_export_include_directories(include)
-ament_export_dependencies(GZ_SIM)
 ament_export_dependencies(geometry_msgs)
 ament_export_dependencies(nav_msgs)
 ament_export_dependencies(rclcpp)
