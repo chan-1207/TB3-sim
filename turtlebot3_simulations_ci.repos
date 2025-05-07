@@ -15,6 +15,3 @@ repositories:
     type: git
     url: https://github.com/ROBOTIS-GIT/hls_lfcd_lds_driver.git
     version: main
-  gz-sim:
-    url: https://github.com/gazebosim/gz-sim.git
-    version: gz-sim8
