@@ -16,26 +16,13 @@
 
 #include "turtlebot3_gazebo/obstacles.hpp"
 
-#include <chrono>
 #include <cmath>
 #include <memory>
-#include <sdf/Element.hh>
 
+#include <gz/math/Quaternion.hh>
+#include <gz/math/Vector3.hh>
 #include <gz/plugin/Register.hh>
-#include <gz/sim/EventManager.hh>
 #include <gz/sim/Types.hh>
-
-using gz::math::Pose3d;
-using gz::math::Quaterniond;
-using gz::math::Vector3d;
-using gz::sim::Entity;
-using gz::sim::EntityComponentManager;
-using gz::sim::EventManager;
-using gz::sim::ISystemConfigure;
-using gz::sim::ISystemPreUpdate;
-using gz::sim::Model;
-using gz::sim::System;
-using gz::sim::UpdateInfo;
 
 namespace turtlebot3_gazebo
 {

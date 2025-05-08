@@ -20,12 +20,11 @@
 #include <chrono>
 #include <memory>
 
-#include <gz/math/Quaternion.hh>
-#include <gz/math/Vector3.hh>
+#include <gz/sim/components/Pose.hh>
 #include <gz/sim/EntityComponentManager.hh>
+#include <gz/sim/EventManager.hh>
 #include <gz/sim/Model.hh>
 #include <gz/sim/System.hh>
-#include <gz/sim/components/Pose.hh>
 
 namespace turtlebot3_gazebo
 {
