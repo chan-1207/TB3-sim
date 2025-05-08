@@ -25,9 +25,7 @@ find_package(nav_msgs REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(tf2 REQUIRED)
-find_package(gz-cmake3 REQUIRED)
-
-gz_find_package(gz-sim8 REQUIRED)
+find_package(gz-sim8 REQUIRED)
 
 ################################################################################
 # Build
@@ -92,6 +90,7 @@ install(DIRECTORY include/
 # Macro for ament package
 ################################################################################
 ament_export_include_directories(include)
+ament_export_dependencies(gz-sim8)
 ament_export_dependencies(geometry_msgs)
 ament_export_dependencies(nav_msgs)
 ament_export_dependencies(rclcpp)
