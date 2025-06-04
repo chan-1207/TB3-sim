@@ -20,12 +20,13 @@ endif()
 # Find ament packages and libraries for ament and system dependencies
 ################################################################################
 find_package(ament_cmake REQUIRED)
+find_package(ros_gz_sim REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(nav_msgs REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(tf2 REQUIRED)
-find_package(gz-sim8 REQUIRED)
+find_package(gz_sim_vendor REQUIRED)
 
 ################################################################################
 # Build
@@ -39,15 +40,17 @@ include_directories(
   ${GAZEBO_INCLUDE_DIRS}
 )
 
-set(dependencies
-  geometry_msgs
-  nav_msgs
-  rclcpp
-  sensor_msgs
-  tf2
+set(EXEC_NAME "turtlebot3_drive")
+
+add_executable(${EXEC_NAME} src/turtlebot3_drive.cpp)
+target_link_libraries(${EXEC_NAME}
+  ${geometry_msgs_TARGETS}
+  ${nav_msgs_TARGETS}
+  ${sensor_msgs_TARGETS}
+  rclcpp::rclcpp
+  tf2::tf2
 )
 
-add_executable(turtlebot3_drive src/turtlebot3_drive.cpp)
 ament_target_dependencies(turtlebot3_drive ${dependencies})
 
 set(OBSTACLE_LIBS
@@ -56,14 +59,16 @@ set(OBSTACLE_LIBS
   obstacle2
 )
 
-
 foreach(lib ${OBSTACLE_LIBS})
   add_library(${lib} SHARED src/${lib}.cpp)
   target_include_directories(${lib}
-    PUBLIC ${gz-sim8_INCLUDE_DIRS}
+    PUBLIC include
   )
   target_link_libraries(${lib}
-    ${gz-sim8_LIBRARIES}
+    gz-sim::gz-sim
+  )
+  ament_target_dependencies(${lib}
+    gz-sim
   )
 endforeach()
 
@@ -71,7 +76,7 @@ endforeach()
 # Install
 ################################################################################
 install(TARGETS
-turtlebot3_drive
+  ${EXEC_NAME}
   obstacles
   obstacle1
   obstacle2
@@ -90,10 +95,12 @@ install(DIRECTORY include/
 # Macro for ament package
 ################################################################################
 ament_export_include_directories(include)
-ament_export_dependencies(gz-sim8)
-ament_export_dependencies(geometry_msgs)
-ament_export_dependencies(nav_msgs)
-ament_export_dependencies(rclcpp)
-ament_export_dependencies(sensor_msgs)
-ament_export_dependencies(tf2)
+ament_export_dependencies(
+  gazebo_ros_pkgs
+  geometry_msgs
+  nav_msgs
+  rclcpp
+  sensor_msgs
+  tf2
+)
 ament_package()

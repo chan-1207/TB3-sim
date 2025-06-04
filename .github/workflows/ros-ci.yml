@@ -49,15 +49,6 @@ jobs:
         with:
           required-ros-distributions: ${{ matrix.ros_distribution }}
 
-      - name: Set up Gazebo harmonic
-        run: |
-          sudo apt update
-          sudo apt install -y curl gnupg lsb-release
-          sudo curl https://packages.osrfoundation.org/gazebo.gpg --output /usr/share/keyrings/pkgs-osrf-archive-keyring.gpg
-          echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/pkgs-osrf-archive-keyring.gpg] http://packages.osrfoundation.org/gazebo/ubuntu-stable $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/gazebo-stable.list > /dev/null
-          sudo apt update
-          sudo apt install -y gz-harmonic
-
       - name: Build and Test
         uses: ros-tooling/action-ros-ci@v0.3
         with:

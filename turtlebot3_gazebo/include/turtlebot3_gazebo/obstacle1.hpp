@@ -19,11 +19,11 @@
 
 #include <chrono>
 #include <memory>
-#include <sdf/Element.hh>
+#include <vector>
 
-#include <gz/sim/EntityComponentManager.hh>
-#include <gz/sim/Model.hh>
 #include <gz/sim/System.hh>
+#include <gz/sim/Model.hh>
+#include <gz/math/Vector3.hh>
 
 namespace turtlebot3_gazebo
 {
@@ -48,8 +48,13 @@ public:
     gz::sim::EntityComponentManager & ecm) override;
 
 private:
-  gz::sim::Model model{gz::sim::kNullEntity};
+  gz::sim::Model model;
   std::chrono::steady_clock::time_point startTime;
+
+  std::vector<gz::math::Vector3d> waypoints;
+  std::vector<double> segmentDistances;
+  double totalDistance = 0.0;
+  double speed = 0.1;  // meters per second
 };
 
 }  // namespace turtlebot3_gazebo

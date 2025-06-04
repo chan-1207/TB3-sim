@@ -47,8 +47,8 @@ void ObstaclesPlugin::PreUpdate(
 
   auto now = std::chrono::steady_clock::now();
   std::chrono::duration<double> elapsed = now - this->startTime;
-  double t = fmod(elapsed.count(), 40.0);
-  double angle = 2 * M_PI * t / 40.0;
+  double t = fmod(elapsed.count(), 80.0);
+  double angle = 2 * M_PI * t / 80.0;
 
   gz::math::Pose3d pose(
     gz::math::Vector3d(0, 0, 0),

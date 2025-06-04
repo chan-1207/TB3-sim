@@ -16,10 +16,7 @@
 
 #include "turtlebot3_gazebo/obstacle2.hpp"
 
-#include <cmath>
-
-#include <gz/math/Quaternion.hh>
-#include <gz/math/Vector3.hh>
+#include <gz/math/Pose3.hh>
 #include <gz/plugin/Register.hh>
 #include <sdf/Element.hh>
 
@@ -34,85 +31,58 @@ void Obstacle2Plugin::Configure(
 {
   this->model = gz::sim::Model(entity);
   this->startTime = std::chrono::steady_clock::now();
+
+  this->waypoints = {
+    {-2.0, -2.0, 0.25},
+    {-1.3, -1.8, 0.25},
+    {0.5, 2.0, 0.25},
+    {-2.0, 1.5, 0.25},
+    {1.5, -0.2, 0.25},
+    {1.5, -2.0, 0.25},
+    {0.0, -1.5, 0.25},
+    {-0.5, -1.0, 0.25},
+    {-1.0, -1.5, 0.25},
+    {-1.5, -1.9, 0.25},
+    {-2.0, -2.0, 0.25}
+  };
+
+  this->segmentDistances.clear();
+  this->totalDistance = 0.0;
+
+  for (size_t i = 0; i < waypoints.size() - 1; ++i) {
+    double dist = (waypoints[i + 1] - waypoints[i]).Length();
+    this->segmentDistances.push_back(dist);
+    this->totalDistance += dist;
+  }
 }
 
 void Obstacle2Plugin::PreUpdate(
   const gz::sim::UpdateInfo &,
   gz::sim::EntityComponentManager & ecm)
 {
-  if (!this->model.Valid(ecm)) {
-    return;
-  }
+  if (!this->model.Valid(ecm)) {return;}
 
   auto now = std::chrono::steady_clock::now();
   std::chrono::duration<double> elapsed = now - this->startTime;
-  double cycle = 150.0;
-  double t = std::fmod(elapsed.count(), cycle);
 
-  gz::math::Vector3d start, end;
-  double localT = 0.0;
-  double duration = 1.0;
+  double travelDist = std::fmod(elapsed.count() * this->speed, this->totalDistance);
 
-  if (t <= 10.0) {
-    start = {-2.0, -2.0, 0.25};
-    end = {-1.3, -1.8, 0.25};
-    duration = 10.0;
-    localT = t;
-  } else if (t <= 40.0) {
-    start = {-1.3, -1.8, 0.25};
-    end = {0.5, 2.0, 0.25};
-    duration = 30.0;
-    localT = t - 10.0;
-  } else if (t <= 55.0) {
-    start = {0.5, 2.0, 0.25};
-    end = {-2.0, 1.5, 0.25};
-    duration = 15.0;
-    localT = t - 40.0;
-  } else if (t <= 85.0) {
-    start = {-2.0, 1.5, 0.25};
-    end = {1.5, -0.2, 0.25};
-    duration = 30.0;
-    localT = t - 55.0;
-  } else if (t <= 100.0) {
-    start = {1.5, -0.2, 0.25};
-    end = {1.5, -2.0, 0.25};
-    duration = 15.0;
-    localT = t - 85.0;
-  } else if (t <= 110.0) {
-    start = {1.5, -2.0, 0.25};
-    end = {0.0, -1.5, 0.25};
-    duration = 10.0;
-    localT = t - 100.0;
-  } else if (t <= 115.0) {
-    start = {0.0, -1.5, 0.25};
-    end = {-0.5, -1.0, 0.25};
-    duration = 5.0;
-    localT = t - 110.0;
-  } else if (t <= 120.0) {
-    start = {-0.5, -1.0, 0.25};
-    end = {-1.0, -1.5, 0.25};
-    duration = 5.0;
-    localT = t - 115.0;
-  } else if (t <= 125.0) {
-    start = {-1.0, -1.5, 0.25};
-    end = {-1.5, -1.9, 0.25};
-    duration = 5.0;
-    localT = t - 120.0;
-  } else if (t <= 130.0) {
-    start = {-1.5, -1.9, 0.25};
-    end = {-2.0, -2.0, 0.25};
-    duration = 5.0;
-    localT = t - 125.0;
-  } else {
-    start = {-2.0, -2.0, 0.25};
-    end = start;
-    localT = 0.0;
+  size_t idx = 0;
+  double acc = 0.0;
+
+  while (idx < segmentDistances.size() && acc + segmentDistances[idx] < travelDist) {
+    acc += segmentDistances[idx];
+    ++idx;
   }
 
-  double alpha = std::min(localT / duration, 1.0);
-  gz::math::Vector3d currentPos = start + (end - start) * alpha;
-  gz::math::Pose3d pose(currentPos, gz::math::Quaterniond::Identity);
+  if (idx >= segmentDistances.size()) {return;}
 
+  double localT = (travelDist - acc) / segmentDistances[idx];
+  gz::math::Vector3d start = waypoints[idx];
+  gz::math::Vector3d end = waypoints[idx + 1];
+  gz::math::Vector3d currentPos = start + (end - start) * localT;
+
+  gz::math::Pose3d pose(currentPos, gz::math::Quaterniond::Identity);
   this->model.SetWorldPoseCmd(ecm, pose);
 }
 
