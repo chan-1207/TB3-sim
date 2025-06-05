@@ -1,7 +1,7 @@
 ################################################################################
 # Set minimum required version of cmake, project name and compile options
 ################################################################################
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.8)
 project(turtlebot3_gazebo)
 
 if(NOT CMAKE_CXX_STANDARD)
@@ -34,6 +34,8 @@ find_package(gz_math_vendor REQUIRED)
 find_package(gz-math REQUIRED)
 find_package(gz_sim_vendor REQUIRED)
 find_package(gz-sim REQUIRED)
+find_package(gz_plugin_vendor REQUIRED)
+find_package(gz-plugin REQUIRED)
 
 ################################################################################
 # Build
