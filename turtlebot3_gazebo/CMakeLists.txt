@@ -26,10 +26,10 @@ find_package(nav_msgs REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(tf2 REQUIRED)
+find_package(gz_cmake_vendor REQUIRED)
+find_package(gz-cmake REQUIRED)
 find_package(gz_sim_vendor REQUIRED)
-find_package(PkgConfig REQUIRED)
-
-pkg_check_modules(GZ_SIM REQUIRED gz-sim)
+find_package(gz-sim REQUIRED)
 
 ################################################################################
 # Build
@@ -41,6 +41,7 @@ link_directories(
 
 include_directories(
   include
+  ${GAZEBO_INCLUDE_DIRS}
   ${gz_sim_vendor_INCLUDE_DIRS}
   ${GZ_SIM_INCLUDE_DIRS}
 )
@@ -74,12 +75,13 @@ set(OBSTACLE_LIBS
 foreach(lib ${OBSTACLE_LIBS})
   add_library(${lib} SHARED src/${lib}.cpp)
   target_link_libraries(${lib}
+    PUBLIC
     ${GZ_SIM_LIBRARIES}
-    ${gz_sim_vendor_LIBRARIES}
   )
   target_include_directories(${lib}
+    PUBLIC
     include
-    ${gz_sim_vendor_INCLUDE_DIRS}
+    ${GZ_SIM_INCLUDE_DIRS}
   )
 endforeach()
 
