@@ -29,8 +29,7 @@ find_package(tf2 REQUIRED)
 find_package(gz_sim_vendor REQUIRED)
 find_package(PkgConfig REQUIRED)
 
-# Use pkg-config to find gz-sim8
-pkg_check_modules(GZ_SIM REQUIRED gz-sim8)
+pkg_check_modules(GZ_SIM REQUIRED gz-sim)
 
 ################################################################################
 # Build
@@ -42,7 +41,6 @@ link_directories(
 
 include_directories(
   include
-  ${GAZEBO_INCLUDE_DIRS}
   ${gz_sim_vendor_INCLUDE_DIRS}
   ${GZ_SIM_INCLUDE_DIRS}
 )
@@ -67,8 +65,6 @@ target_link_libraries(${EXEC_NAME}
   tf2::tf2
 )
 
-ament_target_dependencies(${EXEC_NAME} ${dependencies})
-
 set(OBSTACLE_LIBS
   obstacles
   obstacle1
@@ -77,13 +73,14 @@ set(OBSTACLE_LIBS
 
 foreach(lib ${OBSTACLE_LIBS})
   add_library(${lib} SHARED src/${lib}.cpp)
-  target_include_directories(${lib}
-    PUBLIC include
-  )
   target_link_libraries(${lib}
     ${GZ_SIM_LIBRARIES}
+    ${gz_sim_vendor_LIBRARIES}
   )
-  ament_target_dependencies(${lib} gz_sim_vendor)
+  target_include_directories(${lib}
+    include
+    ${gz_sim_vendor_INCLUDE_DIRS}
+  )
 endforeach()
 
 ################################################################################
