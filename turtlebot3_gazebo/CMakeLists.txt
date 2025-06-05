@@ -28,6 +28,10 @@ find_package(sensor_msgs REQUIRED)
 find_package(tf2 REQUIRED)
 find_package(gz_cmake_vendor REQUIRED)
 find_package(gz-cmake REQUIRED)
+find_package(gz_utils_vendor REQUIRED)
+find_package(gz-utils REQUIRED)
+find_package(gz_math_vendor REQUIRED)
+find_package(gz-math REQUIRED)
 find_package(gz_sim_vendor REQUIRED)
 find_package(gz-sim REQUIRED)
 
@@ -44,15 +48,6 @@ include_directories(
   ${GAZEBO_INCLUDE_DIRS}
   ${gz_sim_vendor_INCLUDE_DIRS}
   ${GZ_SIM_INCLUDE_DIRS}
-)
-
-set(dependencies
-  geometry_msgs
-  nav_msgs
-  rclcpp
-  sensor_msgs
-  tf2
-  gz_sim_vendor
 )
 
 set(EXEC_NAME "turtlebot3_drive")
@@ -76,12 +71,9 @@ foreach(lib ${OBSTACLE_LIBS})
   add_library(${lib} SHARED src/${lib}.cpp)
   target_link_libraries(${lib}
     PUBLIC
-    ${GZ_SIM_LIBRARIES}
-  )
-  target_include_directories(${lib}
-    PUBLIC
-    include
-    ${GZ_SIM_INCLUDE_DIRS}
+    gz-sim::gz-sim
+    gz-math::gz-math
+    gz-utils::gz-utils
   )
 endforeach()
 
