@@ -26,8 +26,6 @@ find_package(nav_msgs REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(tf2 REQUIRED)
-find_package(gz_utils_vendor REQUIRED)
-find_package(gz-utils REQUIRED)
 find_package(gz_math_vendor REQUIRED)
 find_package(gz-math REQUIRED)
 find_package(gz_sim_vendor REQUIRED)
@@ -73,7 +71,6 @@ foreach(lib ${OBSTACLE_LIBS})
     PUBLIC
     gz-sim::gz-sim
     gz-math::gz-math
-    gz-utils::gz-utils
   )
 endforeach()
 
